@@ -6,7 +6,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  AppState
 } from 'react-native';
 import _ from 'lodash';
 import {sprintf} from 'sprintf-js';
@@ -30,7 +29,6 @@ class CountDown extends React.Component {
 
   state = {
     until: this.props.until,
-    wentBackgroundAt: null,
   };
 
   componentDidMount() {
@@ -38,23 +36,10 @@ class CountDown extends React.Component {
       this.onFinish = _.once(this.props.onFinish);
     }
     this.timer = setInterval(this.updateTimer, 1000);
-    AppState.addEventListener('change', this._handleAppStateChange);
   }
 
   componentWillUnmount() {
     clearInterval(this.timer);
-    AppState.removeEventListener('change', this._handleAppStateChange);
-  }
-
-  _handleAppStateChange = currentAppState => {
-    const {until, wentBackgroundAt} = this.state;
-    if (currentAppState === 'active' && wentBackgroundAt) {
-      const diff = (Date.now() - wentBackgroundAt) / 1000.0;
-      this.setState({until: Math.max(0, until - diff)});
-    }
-    if (currentAppState === 'background') {
-      this.setState({wentBackgroundAt: Date.now()});
-    }
   }
 
   getTimeLeft = () => {
@@ -74,11 +59,10 @@ class CountDown extends React.Component {
       clearInterval(this.timer);
       if (this.onFinish) {
         this.onFinish();
-        this.setState({until: 0});
       }
-    } else {
-      this.setState({until: until - 1});
     }
+
+    this.setState({until: until - 1});
   };
 
   renderDigit = (d) => {
@@ -107,14 +91,14 @@ class CountDown extends React.Component {
       <View key={label} style={styles.doubleDigitCont}>
         <View style={styles.timeInnerCont}>
           {this.renderDigit(digits)}
+          <Text style={[
+            styles.timeTxt,
+            {fontSize: size / 1.2},
+            {color: timeTxtColor},
+          ]}>
+            {label}
+          </Text>
         </View>
-        <Text style={[
-          styles.timeTxt,
-          {fontSize: size / 1.8},
-          {color: timeTxtColor},
-        ]}>
-          {label}
-        </Text>
       </View>
     );
   };
@@ -131,10 +115,10 @@ class CountDown extends React.Component {
         style={styles.timeCont}
         onPress={this.props.onPress}
       >
-        {_.includes(timeToShow, 'D') ? this.renderDoubleDigits('Days', newTime[0]) : null}
-        {_.includes(timeToShow, 'H') ? this.renderDoubleDigits('Hours', newTime[1]) : null}
-        {_.includes(timeToShow, 'M') ? this.renderDoubleDigits('Minutes', newTime[2]) : null}
-        {_.includes(timeToShow, 'S') ? this.renderDoubleDigits('Seconds', newTime[3]) : null}
+        {_.includes(timeToShow, 'D') ? this.renderDoubleDigits('d', newTime[0]) : null}
+        {_.includes(timeToShow, 'H') ? this.renderDoubleDigits('h', newTime[1]) : null}
+        {_.includes(timeToShow, 'M') ? this.renderDoubleDigits('m', newTime[2]) : null}
+        {_.includes(timeToShow, 'S') ? this.renderDoubleDigits('s', newTime[3]) : null}
       </Component>
     );
   };
@@ -164,7 +148,9 @@ const styles = StyleSheet.create({
   },
   timeTxt: {
     color: 'white',
-    marginVertical: 2,
+    marginBottom: 2,
+    marginTop: 5,
+    marginLeft: -8,
     backgroundColor: 'transparent',
   },
   timeInnerCont: {
@@ -173,7 +159,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   digitCont: {
-
     borderRadius: 5,
     marginHorizontal: 2,
     alignItems: 'center',
