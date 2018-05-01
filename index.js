@@ -42,6 +42,12 @@ class CountDown extends React.Component {
     clearInterval(this.timer);
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      until: nextProps.until,
+    });
+  }
+
   getTimeLeft = () => {
     const {until} = this.state;
     return {
