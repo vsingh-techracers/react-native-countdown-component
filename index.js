@@ -62,7 +62,7 @@ class CountDown extends React.Component {
     const {until} = this.state;
 
     if (until <= 1) {
-      // clearInterval(this.timer);
+      clearInterval(this.timer);
       this.props.onFinish();
       // if (this.onFinish) {
       //   this.onFinish();
