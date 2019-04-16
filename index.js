@@ -72,20 +72,20 @@ class CountDown extends React.Component {
     this.setState({until: until2 < 0 ? 0 : until2});
   };
 
-  renderDigit = (d) => {
+  renderDigit = (d, lable) => {
     const {digitBgColor, digitTxtColor, size} = this.props;
     return (
       <View style={[
         styles.digitCont,
         {backgroundColor: digitBgColor},
-        {width: size * 2.3, height: size * 2.6},
+        {width: size * 1.8, height: size * 2.6},
       ]}>
         <Text style={[
           styles.digitTxt,
           {fontSize: size},
           {color: digitTxtColor}
         ]}>
-          {d}
+          {lable === 's' ? d : `${d} :`}
         </Text>
       </View>
     );
@@ -97,14 +97,7 @@ class CountDown extends React.Component {
     return (
       <View key={label} style={styles.doubleDigitCont}>
         <View style={styles.timeInnerCont}>
-          {this.renderDigit(digits)}
-          <Text style={[
-            styles.timeTxt,
-            {fontSize: size / 1.2},
-            {color: timeTxtColor},
-          ]}>
-            {label}
-          </Text>
+          {this.renderDigit(digits, label)}
         </View>
       </View>
     );
@@ -153,13 +146,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
   },
-  timeTxt: {
-    color: 'white',
-    marginBottom: 2,
-    marginTop: 5,
-    marginLeft: -8,
-    backgroundColor: 'transparent',
-  },
   timeInnerCont: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -167,7 +153,6 @@ const styles = StyleSheet.create({
   },
   digitCont: {
     borderRadius: 5,
-    marginHorizontal: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
